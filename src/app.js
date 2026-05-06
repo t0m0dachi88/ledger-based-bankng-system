@@ -2,7 +2,7 @@ const exprees = require('express');
 const connectDB=require('./db/db');
 const authRoutes=require("./routes/auth.routes")
 
-require('dotenv')
+require('dotenv').config();
 const app = exprees();
 app.use(exprees.json());
 
