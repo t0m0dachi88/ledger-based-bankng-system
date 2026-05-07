@@ -11,5 +11,5 @@ connectDB();
 
 app.use("/api/auth",authRoutes)
 app.use("/api/accounts",accountRoutes)
-
+app.use("/api/transactions",require("../src/routes/transaction.routes"))
 module.exports = app;

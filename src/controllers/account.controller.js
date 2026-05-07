@@ -11,7 +11,13 @@ return res.status(201).json({message:'Account created successfully',account});
 }
 
 
+const getUserAccount=async(req,res)=>{
+    const user=req.user;
+    const account=await accountModel.findOne({user:user._id});
+    res.status(200).json({account});
+}
 
 module.exports = {
-    createAccount
+    createAccount,
+    getUserAccount
 }
