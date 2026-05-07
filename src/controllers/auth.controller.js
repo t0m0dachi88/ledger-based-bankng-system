@@ -6,7 +6,23 @@ const jwt=require('jsonwebtoken');
 async function register(req,res)
 {
     const {email,password,name}=req.body
-     
+     const isExists=await userModel.findOne({email})
+     if(isExists)     {
+        return res.status(400).json({message:"User already exists"})
+     }
+        const user=await userModel.create({email,password,name})
+        const token=jwt.sign({
+            id:user._id,
+        },process.env.JWT_SECRET,{expiresIn:"1d"})
+
+        res.cookie("token",token,{
+            httpOnly:true,
+            })
+
+
+        return res.status(201).json({message:"User registered successfully",token,
+            user:{username:user.name,email:user.email,id:user._id}
+        })
 }
 
 module.exports = { register }
