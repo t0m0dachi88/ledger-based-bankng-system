@@ -1,5 +1,6 @@
 const exprees = require('express');
 const connectDB=require('./db/db');
+const accountRoutes=require("./routes/account.routes");
 const authRoutes=require("./routes/auth.routes")
 const cookie=require('cookie-parser');
 require('dotenv').config();
@@ -9,6 +10,6 @@ app.use(cookie()) // Use cookie-parser middleware to parse cookies in incoming r
 connectDB();
 
 app.use("/api/auth",authRoutes)
-
+app.use("/api/accounts",accountRoutes)
 
 module.exports = app;
