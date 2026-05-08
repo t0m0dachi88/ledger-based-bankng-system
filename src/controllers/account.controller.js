@@ -17,6 +17,18 @@ const getUserAccount=async(req,res)=>{
     res.status(200).json({account});
 }
 
+
+async function getAccountBalance(req,res)
+{
+    const {accountID}=req.params;
+    const account=await accountModel.findById(accountID);
+    if(!account)
+    {
+        return res.status(404).json({message:'Account not found'});
+    }
+    const balance=await account.getBalance();
+    return res.status(200).json({balance});
+}
 module.exports = {
     createAccount,
     getUserAccount

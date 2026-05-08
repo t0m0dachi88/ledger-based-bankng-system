@@ -63,6 +63,52 @@ return res.status(201).json({message:'Initial fund transaction created successfu
 
 
 
+async function createTransaction(req, res)
+{
+
+    //validate request body 
+    const {fromAccount, toAccount, amount, idempotencyKey } = req.body;
+  if(!fromAccount || !toAccount || !amount || !idempotencyKey) {
+    return res.status(400).json({message:'fromAccount, toAccount, amount and idempotencyKey are required'});
+  }
+const fromUserAccount = await accountModel.findOne({_id:fromAccount});
+const toUserAccount = await accountModel.findOne({_id:toAccount});
+if(!fromUserAccount || !toUserAccount) {
+    return res.status(404).json({message:'fromAccount or toAccount not found'});
+}
+//idempotnecy key validate
+ const isTransactionExist = await transactionModel.findOne({idempotencyKey});
+ if(isTransactionExist) {
+    if(isTransactionExist.status === 'COMPLETED') {
+        return res.status(200).json({message:'Transaction already processed',transactionId:isTransactionExist._id});
+    }
+    if(isTransactionExist.status === 'PENDING') {
+        return res.status(200).json({message:'Transaction is being processed',transactionId:isTransactionExist._id});
+    }
+    if(isTransactionExist.status === 'FAILED') {
+        return res.status(200).json({message:'Previous transaction attempt failed, please try again',transactionId:isTransactionExist._id});
+    }
+
+ 
+ }
+//ACCOUNT STAT CHECK
+
+if(fromUserAccount.status !== 'ACTIVE' || toUserAccount.status !== 'ACTIVE') 
+    {
+       return res.status(400).json({message:'Both fromAccount and toAccount must be active'});
+    }
+//aggregation pipeline 
+//sender sccount to balance derive
+const fromAccountBalance = await fromUserAccount.getBalance();
+if(fromAccountBalance < amount) {
+    return res.status(400).json({message:'Insufficient balance in fromAccount'});   
+}
+
+
+
+
+}
+
 
 
 module.exports = {
