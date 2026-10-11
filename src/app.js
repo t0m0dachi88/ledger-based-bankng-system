@@ -1,15 +1,31 @@
-const exprees = require('express');
-const connectDB=require('./db/db');
-const accountRoutes=require("./routes/account.routes");
-const authRoutes=require("./routes/auth.routes")
-const cookie=require('cookie-parser');
-require('dotenv').config();
-const app = exprees();
-app.use(exprees.json());
-app.use(cookie()) // Use cookie-parser middleware to parse cookies in incoming requests
-connectDB();
+const express = require("express")
+const cookieParser = require("cookie-parser")
 
-app.use("/api/auth",authRoutes)
-app.use("/api/accounts",accountRoutes)
-app.use("/api/transactions",require("../src/routes/transaction.routes"))
-module.exports = app;
+
+
+const app = express()
+
+
+app.use(express.json())
+app.use(cookieParser())
+
+/**
+ * - Routes required
+ */
+const authRouter = require("./routes/auth.routes")
+const accountRouter = require("./routes/account.routes")
+const transactionRoutes = require("./routes/transaction.routes")
+
+/**
+ * - Use Routes
+ */
+
+app.get("/", (req, res) => {
+    res.send("Ledger Service is up and running")
+})
+
+app.use("/api/auth", authRouter)
+app.use("/api/accounts", accountRouter)
+app.use("/api/transactions", transactionRoutes)
+
+module.exports = app
